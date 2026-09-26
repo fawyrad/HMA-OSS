@@ -190,6 +190,8 @@ dependencies {
     implementation(libs.dev.androidbroadcast.vbpd.reflection)
     implementation(libs.dev.rikka.hidden.compat)
 
+    implementation(libs.com.github.topjohnwu.libsu.core)
+
     implementation(libs.androidx.appcompat.appcompat)
     implementation(libs.material)
 }

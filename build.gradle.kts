@@ -19,7 +19,10 @@ fun String.execute(currentWorkingDir: File = file("./")): String {
 }
 
 val localProperties = Properties()
-localProperties.load(file("local.properties").inputStream())
+val localPropertiesFile = file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
 val ciBuild = providers.environmentVariable("CI").isPresent
 val officialBuild by extra(localProperties.getProperty("officialBuild", "false") == "true")
 
@@ -35,8 +38,13 @@ fun getUncommittedSuffix(): String {
     val shortRef = "git rev-parse --short HEAD".execute()
 
     if (ciBuild) {
-        val headRefVal = providers.environmentVariable("GITHUB_HEAD_REF").orElse("HEAD").get()
-        return "$headRefVal-$shortRef"
+        // GITHUB_HEAD_REF is only set on pull_request builds; on push builds it is empty,
+        // which previously produced a version name with a leading '-' (e.g. "-a1b2c3d").
+        // Fall back to GITHUB_REF_NAME (branch/tag) and never emit a leading dash.
+        val headRef = providers.environmentVariable("GITHUB_HEAD_REF").orElse("").get()
+        val refName = providers.environmentVariable("GITHUB_REF_NAME").orElse("").get()
+        val branch = headRef.ifBlank { refName }.substringAfterLast('/')
+        return if (branch.isBlank() || branch == "master") shortRef else "$branch-$shortRef"
     }
 
     var returnedVal = ""

@@ -642,7 +642,15 @@ class HMAService(val pms: IPackageManager, val pmn: Any?) : IHMAService.Stub() {
 
     override fun getPackageNames(userId: Int) = binderLocalScope {
         pms.getAllPackages().filter { packageName ->
-            pms.isPackageAvailable(packageName, userId)
+            pms.isPackageAvailable(packageName, userId) &&
+                // Root-cause fix: only return real applications. getAllPackages() also lists
+                // APEX modules and static-shared-libraries, which have no launchable
+                // ApplicationInfo, cannot be meaningfully hidden, and for which
+                // getPackageInfo() returns null - previously causing the PackageHelper NPE
+                // log spam. Exclude anything without an ApplicationInfo at the source.
+                runCatching {
+                    pms.getPackageInfoCompat(packageName, 0L, userId)?.applicationInfo
+                }.getOrNull() != null
         }.toTypedArray()
     }
 

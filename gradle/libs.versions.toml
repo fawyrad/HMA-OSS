@@ -37,3 +37,4 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 io-github-vova7878-r8annotations = { module = "io.github.vova7878:R8Annotations", version.ref = "r8_annotations" }
 io-coilkt-coil3-coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 io-coilkt-coil3-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+com-github-topjohnwu-libsu-core = { module = "com.github.topjohnwu.libsu:core", version = "6.0.0" }

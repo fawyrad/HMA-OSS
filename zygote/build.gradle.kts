@@ -105,7 +105,8 @@ zygisk {
     description = "A Zygisk backend for HMA-OSS"
     entrypoint = "org.frknkrc44.hma_oss.zygote.ZygoteEntry"
     archiveName = "${rootProject.name}-ZYGISK-${android.defaultConfig.versionName}"
-    updateJson = "https://furkank.net/hma_oss_update_checker.json"
+    // Custom fork: no update-check JSON is shipped, so Magisk/KernelSU never nag about an
+    // "update" against the official HMA-OSS release checker.
     isAddVariantToArchiveName = true
 }
 
