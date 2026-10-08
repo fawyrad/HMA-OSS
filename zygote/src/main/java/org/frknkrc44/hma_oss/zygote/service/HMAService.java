@@ -777,7 +777,13 @@ public class HMAService extends IHMAService.Stub {
             try {
                 for (String packageName : pms.getAllPackages()) {
                     try {
-                        if (pms.isPackageAvailable(packageName, userId)) {
+                        // Root-cause fix: only return real applications. getAllPackages() also lists
+                        // APEX modules and static-shared-libraries, which have no launchable
+                        // ApplicationInfo, cannot be meaningfully hidden, and for which getPackageInfo()
+                        // returns null - previously causing the PackageHelper NPE log spam.
+                        final var packageInfo = Utils.getPackageInfoCompat(pms, packageName, 0, userId);
+                        if (pms.isPackageAvailable(packageName, userId) &&
+                                packageInfo != null && packageInfo.applicationInfo != null) {
                             list.add(packageName);
                         }
                     } catch (Throwable ignore) {}

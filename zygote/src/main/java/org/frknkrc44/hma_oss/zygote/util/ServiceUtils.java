@@ -99,7 +99,12 @@ public class ServiceUtils {
     public static String[] getCallingApps(IPackageManager pms, int callingUid) throws RemoteException {
         if (callingUid == Constants.UID_SYSTEM) return new String[0];
 
-        return pms.getPackagesForUid(callingUid);
+        // getPackagesForUid() returns null for UIDs with no packages (e.g. the shell/root
+        // uid during `am start`/`monkey`, or isolated uids). Callers iterate this array
+        // directly, so a null here caused NullPointerExceptions in the hooks
+        // ("An error occurred on hook" spam). Never return null.
+        final String[] packages = pms.getPackagesForUid(callingUid);
+        return packages != null ? packages : new String[0];
     }
 
     public static int findAndVerifyAppSignature(IPackageManager pms) {

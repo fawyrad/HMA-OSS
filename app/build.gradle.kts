@@ -151,6 +151,8 @@ dependencies {
     implementation(libs.dev.androidbroadcast.vbpd)
     implementation(libs.dev.androidbroadcast.vbpd.reflection)
 
+    implementation(libs.com.github.topjohnwu.libsu.core)
+
     implementation(libs.androidx.appcompat.appcompat)
     implementation(libs.material)
 }
